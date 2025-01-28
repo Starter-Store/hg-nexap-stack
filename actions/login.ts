@@ -28,9 +28,9 @@ export const login = async (
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return { error: "Invalid credentials!" };
+          return { error: "Identifiants invalides !" };
         default:
-          return { error: "Something went wrong!" };
+          return { error: "Quelque chose s'est mal passé !" };
       }
     }
     throw error;

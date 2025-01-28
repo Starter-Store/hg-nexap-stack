@@ -30,7 +30,7 @@ export default {
         }; // Explicit typing
 
         if (!email || !password) {
-          throw new Error("Email and Password are required.");
+          throw new Error("L'e-mail et le mot de passe sont requis.");
           // return { error: "Email and Password are required." };
         }
 
@@ -49,22 +49,23 @@ export default {
 
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Authentication failed.");
+            throw new Error(error.message || "L'authentification a échoué.");
+          } else {
+            const data = await response.json();
+            // Ensure the returned object matches the expected User type
+            return {
+              id: data.data?.id,
+              email: data.email,
+              name: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
+              accessToken: data.data?.token,
+              username: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
+              role: data.data?.role,
+            };
           }
-
-          const data = await response.json();
-
-          // Ensure the returned object matches the expected User type
-          return {
-            id: data.data?.id,
-            email: data.email,
-            name: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
-            accessToken: data.data?.token,
-            username: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
-            role: data.data?.role,
-          };
         } catch (error: any) {
-          throw new Error(error.message || "Authentication error occurred.");
+          throw new Error(
+            error.message || "Une erreur d'authentification s'est produite."
+          );
           // return { error: error.message || "Authentication error occurred." };
         }
       },

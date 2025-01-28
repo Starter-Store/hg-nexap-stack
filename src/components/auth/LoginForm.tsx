@@ -137,15 +137,14 @@ import { DEFAULT_LOGIN_REDIRECT } from "@/lib/routes.config";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
+import { toast } from "sonner";
 import { login } from "../../../actions/login";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
   const callback = searchParams.get("callbackUrl");
   const [isPending, startTransition] = useTransition();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -158,35 +157,18 @@ const LoginForm = () => {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     startTransition(async () => {
       try {
-        const response = await login(values, callback);
-        // .then((data) => {
-        //   if (data?.error) {
-        //     form.reset();
-        //     setError(data.error);
-        //   }
-
-        //   if (data?.success) {
-        //     form.reset();
-        //     setSuccess(data?.success);
-        //   }
-
-        //   if (data?.twoFactor) {
-        //     setShowTwoFactor(true);
-        //   }
-        // })
-        // .catch(() => setError("Something went wrong"));
-
-        if (response?.error) {
-          setErrorMessage(response.error);
-          setSuccessMessage(null);
-        } else {
-          setSuccessMessage("Login successful!");
-          setErrorMessage(null);
-          window.location.href = callback || DEFAULT_LOGIN_REDIRECT;
-        }
+        await login(values, callback).then((response) => {
+          if (response?.error) {
+            toast.error(response.error);
+          } else {
+            toast.success("Connexion réussie !");
+            window.location.href = callback || DEFAULT_LOGIN_REDIRECT;
+          }
+        });
       } catch (error) {
-        setErrorMessage("An unexpected error occurred. Please try again.");
-        setSuccessMessage(null);
+        toast.error(
+          "Une erreur inattendue s'est produite. Veuillez réessayer."
+        );
       }
     });
   }
@@ -196,16 +178,6 @@ const LoginForm = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid gap-4">
-            {/* Display success or error messages */}
-            {errorMessage && (
-              <p className="text-red-500 text-sm text-center">{errorMessage}</p>
-            )}
-            {successMessage && (
-              <p className="text-green-500 text-sm text-center">
-                {successMessage}
-              </p>
-            )}
-
             {/* Email Field */}
             <FormField
               control={form.control}

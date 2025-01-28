@@ -2,6 +2,7 @@ import Header from "@/components/header/Header";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -17,15 +18,22 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <SidebarProvider>
-          <AppSidebar />
-          <main className="w-full">
-            <SidebarInset>
-              <Header />
-              {children}
-            </SidebarInset>
-          </main>
-        </SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="w-full">
+              <SidebarInset>
+                <Header />
+                {children}
+              </SidebarInset>
+            </main>
+          </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

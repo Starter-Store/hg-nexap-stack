@@ -7,7 +7,7 @@ export default function DashboardPage() {
 
   return (
     <div className=" bg-red-200">
-      <div>
+      <div className="w-56 overflow-hidden">
         {user && (
           <>
             <div>
@@ -19,7 +19,9 @@ export default function DashboardPage() {
                 That's your email :{" "}
                 <span className="font-bold">{user?.email}</span>
               </h1>
-              <div>{JSON.stringify(user)}</div>
+              <div>
+                <pre>{JSON.stringify(user)}</pre>
+              </div>
             </div>
           </>
         )}
