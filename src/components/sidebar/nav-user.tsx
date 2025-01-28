@@ -20,9 +20,12 @@ import {
 } from "@/components/ui/sidebar";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+
+  const router = useRouter();
 
   const user: any = useCurrentUser();
 
@@ -78,7 +81,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/parametres")}>
                 <Settings2 />
                 Paramètres
               </DropdownMenuItem>

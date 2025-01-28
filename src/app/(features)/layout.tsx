@@ -29,7 +29,7 @@ export default async function RootLayout({
             <main className="w-full">
               <SidebarInset>
                 <Header />
-                {children}
+                <div className="p-5">{children}</div>
               </SidebarInset>
             </main>
           </SidebarProvider>

@@ -6,7 +6,7 @@ export default function DashboardPage() {
   const user = useCurrentUser();
 
   return (
-    <div className=" bg-red-200">
+    <div>
       <div className="w-56 overflow-hidden">
         {user && (
           <>
