@@ -1,4 +1,3 @@
-import { UserRole } from "@/lib/utils";
 import * as z from "zod";
 
 export const loginSchema = z.object({
@@ -11,62 +10,55 @@ export const loginSchema = z.object({
     .regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
 });
 
-export const NewPasswordSchema = z.object({
-  password: z.string().min(6, {
-    message: "Minimum 6 characters required",
-  }),
-});
-
-export const ResetSchema = z.object({
-  email: z.string().email({
-    message: "Email is required",
-  }),
-});
-
-export const RegisterSchema = z.object({
-  email: z.string().email({
-    message: "Email is required",
-  }),
-  password: z.string().min(6, {
-    message: "Minimum 6 characters required",
-  }),
-  name: z.string().min(1, {
-    message: "Name is required",
-  }),
-});
-
-export const SettingsSchema = z
+// ✅ User Schema
+export const userSchema = z
   .object({
-    name: z.optional(z.string()),
-    isTwoFactorEnabled: z.optional(z.boolean()),
-    role: z.enum([UserRole.ADMIN, UserRole.USER]),
-    email: z.optional(z.string().email()),
+    id: z.string().uuid(), // UUID format
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    username: z.string().min(2, "Username must be at least 2 characters"),
+    nomComplet: z.string().min(2, "nomComplet must be at least 2 characters"),
+    email: z.string().email("Invalid email"),
     password: z.optional(z.string().min(6)),
-    newPassword: z.optional(z.string().min(6)),
+    sexe: z.enum(["M", "F"]),
+    role: z.enum(["ADMIN", "USER"]), // Strict roles
+    createdAt: z.string().datetime(), // ISO 8601 format
   })
-  .refine(
-    (data) => {
-      if (data.password && !data.newPassword) {
-        return false;
-      }
+  .passthrough();
 
-      return true;
-    },
-    {
-      message: "New password is required",
-      path: ["newPassword"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.newPassword && !data.password) {
-        return false;
-      }
+// export const SettingsSchema = z
+//   .object({
+//     name: z.optional(z.string()),
+//     isTwoFactorEnabled: z.optional(z.boolean()),
+//     role: z.enum([UserRole.ADMIN, UserRole.USER]),
+//     email: z.optional(z.string().email()),
+//     password: z.optional(z.string().min(6)),
+//     newPassword: z.optional(z.string().min(6)),
+//   })
+//   .refine(
+//     (data) => {
+//       if (data.password && !data.newPassword) {
+//         return false;
+//       }
 
-      return true;
-    },
-    {
-      message: "Password is required",
-      path: ["password"],
-    }
-  );
+//       return true;
+//     },
+//     {
+//       message: "New password is required",
+//       path: ["newPassword"],
+//     }
+//   )
+//   .refine(
+//     (data) => {
+//       if (data.newPassword && !data.password) {
+//         return false;
+//       }
+
+//       return true;
+//     },
+//     {
+//       message: "Password is required",
+//       path: ["password"],
+//     }
+//   );
+// ✅ Infer TypeScript Types from Zod
+export type User = z.infer<typeof userSchema>;

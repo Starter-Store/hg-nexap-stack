@@ -1,7 +1,9 @@
+import { axios } from "@/lib/axios";
 import type { NextAuthConfig } from "next-auth";
 import Credentials, { CredentialInput } from "next-auth/providers/credentials";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
+import { cookies } from "next/headers";
 
 export default {
   providers: [
@@ -34,39 +36,80 @@ export default {
           // return { error: "Email and Password are required." };
         }
 
+        // try {
+        //   // Make a POST request to the external API
+        //   const response = await fetch(
+        //     `${process.env.NEXT_PUBLIC_EXTERNAL_API_BASE_URL}/login`,
+        //     {
+        //       method: "POST",
+        //       headers: {
+        //         "Content-Type": "application/json",
+        //       },
+        //       body: JSON.stringify({ email, password }),
+        //     }
+        //   );
+
+        //   if (!response.ok) {
+        //     const error = await response.json();
+        //     throw new Error(error.message || "L'authentification a échoué.");
+        //   } else {
+        //     const data = await response.json();
+        //     const cookieStore = await cookies();
+
+        //     cookieStore.set("hg-acctok", data.data?.token); // Le token expire dans 7 jours
+
+        //     return {
+        //       id: data.data?.id,
+        //       email: data.email,
+        //       name: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
+        //       accessToken: data.data?.token,
+        //       username: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
+        //       role: data.data?.role,
+        //     };
+        //   }
+        // } catch (error: any) {
+        //   throw new Error(
+        //     error.message || "Une erreur d'authentification s'est produite."
+        //   );
+        //   // return { error: error.message || "Authentication error occurred." };
+        // }
+
         try {
-          // Make a POST request to the external API
-          const response = await fetch(
-            `${process.env.EXTERNAL_API_BASE_URL}/login`,
+          // Envoi de la requête POST avec Axios
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_EXTERNAL_API_BASE_URL}/login`,
+            { email, password },
             {
-              method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ email, password }),
             }
           );
 
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "L'authentification a échoué.");
-          } else {
-            const data = await response.json();
-            // Ensure the returned object matches the expected User type
-            return {
-              id: data.data?.id,
-              email: data.email,
-              name: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
-              accessToken: data.data?.token,
-              username: data.data?.nomComplet ?? undefined, // Convert `null` to `undefined`
-              role: data.data?.role,
-            };
+          // Vérification de la réponse
+          const data = response.data;
+          if (!data || !data.data) {
+            throw new Error("Données invalides reçues.");
           }
+
+          // Stockage du token dans les cookies
+          const cookieStore = await cookies();
+          cookieStore.set("hg-acctok", data?.data?.token);
+
+          // Retour des données utilisateur
+          return {
+            id: data.data?.id,
+            email: data.email,
+            name: data.data?.nomComplet ?? undefined,
+            accessToken: data.data?.token,
+            username: data.data?.nomComplet ?? undefined,
+            role: data.data?.role,
+          };
         } catch (error: any) {
-          throw new Error(
-            error.message || "Une erreur d'authentification s'est produite."
-          );
-          // return { error: error.message || "Authentication error occurred." };
+          const errorMessage =
+            error.response?.data?.message ||
+            "Une erreur d'authentification s'est produite.";
+          throw new Error(errorMessage);
         }
       },
     }),

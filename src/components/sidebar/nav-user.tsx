@@ -19,12 +19,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import Cookies from "js-cookie";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-
   const router = useRouter();
 
   const user: any = useCurrentUser();
@@ -103,7 +103,12 @@ export function NavUser() {
               </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut()}>
+            <DropdownMenuItem
+              onClick={() => {
+                Cookies.remove("hg-acctok");
+                signOut();
+              }}
+            >
               <LogOut />
               Se déconnecter
             </DropdownMenuItem>

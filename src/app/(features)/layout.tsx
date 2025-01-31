@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -29,7 +30,10 @@ export default async function RootLayout({
             <main className="w-full">
               <SidebarInset>
                 <Header />
-                <div className="p-5">{children}</div>
+                <div className="p-5">
+                  {children}
+                  <Toaster richColors />
+                </div>
               </SidebarInset>
             </main>
           </SidebarProvider>

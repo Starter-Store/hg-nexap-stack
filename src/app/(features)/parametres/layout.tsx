@@ -1,105 +1,77 @@
-"use client";
+import { Metadata } from "next";
+import Image from "next/image";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import "../../globals.css";
+import { Separator } from "@/components/ui/separator";
+import { SidebarNav } from "./SidebarNav";
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
+export const metadata: Metadata = {
+  title: "Settings",
+  description: "Advanced form example using react-hook-form and Zod.",
+};
+
+const sidebarNavItems = [
+  {
+    title: "Utilisateurs",
+    href: "/parametres/utilisateurs",
+  },
+  {
+    title: "Profile",
+    href: "/examples/forms",
+  },
+  {
+    title: "Account",
+    href: "/examples/forms/account",
+  },
+  {
+    title: "Appearance",
+    href: "/examples/forms/appearance",
+  },
+  {
+    title: "Notifications",
+    href: "/examples/forms/notifications",
+  },
+  {
+    title: "Display",
+    href: "/examples/forms/display",
+  },
+];
+
+interface SettingsLayoutProps {
   children: React.ReactNode;
-}>) {
-  const pathname = usePathname();
-  const router = useRouter();
+}
 
-  const onActiveSide = (baseUrl: [] | any) => {
-    return baseUrl?.includes(pathname)
-      ? `group relative flex items-center bg-primary px-5 w-full text-white gap-2 text-sm font-semibold rounded-sm px-1 py-2 duration-300 ease-in-out dark:hover:bg-meta-4 activeSide`
-      : `group relative flex items-center px-5 w-full gap-2 text-sm font-semibold rounded-sm px-1 py-2 duration-300 ease-in-out dark:hover:bg-meta-4`;
-  };
-
+export default function layout({ children }: SettingsLayoutProps) {
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-2 my-4  sm:items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button size={"icon"} onClick={() => router.back()}>
-            <ChevronLeft />
-          </Button>
-          <p className="text-gray-500 font-bold text-lg">PARAMETRES</p>
-        </div>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbPage>Paramètres</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <div className="md:hidden">
+        <Image
+          src="/examples/forms-light.png"
+          width={1280}
+          height={791}
+          alt="Forms"
+          className="block dark:hidden"
+        />
+        <Image
+          src="/examples/forms-dark.png"
+          width={1280}
+          height={791}
+          alt="Forms"
+          className="hidden dark:block"
+        />
       </div>
-      <div className="flex flex-col sm:flex-row  h-full flex-1 gap-5">
-        <div className="flex flex-col sm:flex-row  h-full flex-1 gap-5">
-          <nav className="flex flex-col items-start w-60 border border-gray-300 rounded-lg p-3 h-full">
-            <Link
-              className={onActiveSide(["/parametres/utilisateurs"])}
-              href="/parametres/utilisateurs"
-            >
-              Utilisateurs
-            </Link>
-            <Link
-              className={onActiveSide(["/parametres/magasins"])}
-              href="/parametres/magasins"
-            >
-              Magasins
-            </Link>
-            <Link
-              className={onActiveSide(["/parametres/devise"])}
-              href="/parametres/devise"
-            >
-              Devise
-            </Link>
-            <Link
-              className={onActiveSide(["/parametres/taux"])}
-              href="/parametres/taux"
-            >
-              Taux
-            </Link>
-            <Link
-              className={onActiveSide(["/parametres/taxe"])}
-              href="/parametres/taxe"
-            >
-              Taxe
-            </Link>
-          </nav>
-          <div className="w-full">
-            <Card>
-              <CardHeader>
-                {/* <CardTitle>Card Title</CardTitle>
-              <CardDescription>Card Description</CardDescription> */}
-              </CardHeader>
-              <CardContent>
-                {/* <p>Card Content</p> */}
-                {children}
-              </CardContent>
-              <CardFooter>
-                {/* 
-    <p>Card Footer</p>
-    */}
-              </CardFooter>
-            </Card>
-          </div>
+      <div className="hidden space-y-6 p-5 md:block">
+        <div className="space-y-0.5">
+          <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+          <p className="text-muted-foreground">
+            Manage your account settings and set e-mail preferences.
+          </p>
+        </div>
+        <Separator className="my-6" />
+        <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+          <aside className="-mx-4 lg:w-1/5">
+            <SidebarNav items={sidebarNavItems} />
+          </aside>
+          <div className="flex-1 w-full">{children}</div>
         </div>
       </div>
     </>
